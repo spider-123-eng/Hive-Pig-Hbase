@@ -1,0 +1,6 @@
+1001,Revanth,bangalore,9901972233,faucibus@lacinia.net
+1002,Shyam,Hyderabad,08721518210,dolor.Fusce@Nunc.com
+1003,Bharath,USA,12838277635,parturient@aliquameu.org
+1004,Madhu,Delhi,18018853833,Fusce.fermentum@Integereu.ca
+1005,Lokesh,Mumbai,13544486576,est.congue@acturpisegestas.net
+1006,Dravid,Chennai,11066273799,at.egestas.a@Fuscealiquam.net

@@ -1,0 +1,160 @@
+Apache Hive is a data warehouse infrastructure built on top of Hadoop for providing data summarization, query, and analysis.
+
+Apache Pig is a platform for analysing large data sets. Pig's language is a simple query algebra that lets you express data 
+transformations such as merging data sets, filtering them, and applying functions to records or groups of records. 
+Users can create their own functions to do special-purpose processing.
+
+For more differences b/w PIG and Hive follow the link below .
+http://www.aptibook.com/Articles/Pig-and-hive-advantages-disadvantages-features
+
+Creating Tables(Managed and External) in Hive :
+-----------------------------------------------
+CREATE TABLE IF NOT EXISTS employee ( eid int, name String,dept String, yoj String)
+COMMENT 'Employee details'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH '/home/cloudera/ebooks/Hive/emp' INTO TABLE employee ; (loaded data from local)
+LOAD DATA  INPATH '/home/cloudera/ebooks/Hive/emp' INTO TABLE employee ;  (loaded data from HDFS)
+
+CREATE EXTERNAL TABLE IF NOT EXISTS Ext_employee ( eid int, name String,dept String, yoj String)
+COMMENT 'Employee details'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE  LOCATION '/user/cloudera/hive/ExternalTables/' ;
+ 
+Note : Difference between Hive managed tables vs External tables ?
+Managed Table :
+When hive create managed(default) tables, it follows schema on read and load complete file as it is, 
+without any parsing or modification to hive data warehouse directory. And it’s schema information would be 
+saved in hive metastore for later operational use. during drop table it drop data file from warehouse directory 
+as well as schema from metastore, i.e it is called hive managed table.
+
+External Table :
+When we create hive external tables, it does not load source file in hive data warehouse, only add schema information in metstore.
+Hive does not removed or drop any thing related to source file. It only drops schema information from hive metastore at time of drop tables.
+
+Creating tables using Complex Data types :
+------------------------------------------
+
+CREATE TABLE ComplexTypes(
+empId BIGINT,
+name array<string>,
+info map<string,int>,
+address array<struct<city:string,state:string,country:string>>) row format delimited
+fields terminated by ','
+collection items terminated by '|'
+map keys terminated by ':';
+
+load data local inpath "/home/cloudera/ebooks/Hive/complexTypes.txt" into table ComplexTypes;
+
+select address.city from ComplexTypes;
+select empId,name[0], info["Revanth"],address.city from ComplexTypes where empId=6022950;
+
+Sample Data :
+6022950,Revanth|kumar,Revanth:0462|Sirish:1234|Aji:1111,bangalore:KA:India|Pune:MH:India|Kadap:AP:India
+6022951,Ravi|kumar,ravi:0463|Sirisha:1235|Ajith:1511,Chennai:TN:India|Californiya:USA:US|Kadap:AP:India
+6022952,pawan|kalyan,PowerStar:0463|chiru:1235|Ram:1511,Hyd:Ap:India|Atlnta:USA:US|Vijayawada:AP:India
+
+Output looks like this  :
+
+6022950	["Revanth","kumar"]	{"Revanth":462,"Sirish":1234,"Aji":1111}	[{"city":"bangalore","state":"KA","country":"India"},{"city":"Pune","state":"MH","country":"India"},{"city":"Kadap","state":"AP","country":"India"}]
+
+6022951	["Ravi","kumar"]	{"ravi":463,"Sirisha":1235,"Ajith":1511}	[{"city":"Chennai","state":"TN","country":"India"},{"city":"Californiya","state":"USA","country":"US"},{"city":"Kadap","state":"AP","country":"India"}]
+
+6022952	["pawan","kalyan"]	{"PowerStar":463,"chiru":1235,"Ram":1511}	[{"city":"Hyd","state":"Ap","country":"India"},{"city":"Atlnta","state":"USA","country":"US"},{"city":"Vijayawada","state":"AP","country":"India"}]
+
+Hive Joins :
+------------
+CREATE TABLE customers(cust_id  INT,cust_name STRING,ship_address STRING,phone bigint,email string)row format delimited fields terminated by ',';
+
+CREATE TABLE orders(orderid INT,cust_id INT,item STRING,order_dt STRING,track_id STRING)row format delimited fields terminated by ',';
+
+LOAD DATA LOCAL INPATH '/home/cloudera/ebooks/Hive/customers.txt' OVERWRITE INTO TABLE customers;
+LOAD DATA LOCAL INPATH '/home/cloudera/ebooks/Hive/orders.txt' OVERWRITE INTO TABLE orders;
+
+-- JOINS---
+select c.cust_id,c.cust_name,o.orderid,o.track_id from customers c inner join orders o on c.cust_id=o.cust_id;
+
+select c.cust_id,c.cust_name,o.orderid,o.track_id from customers c left outer join orders o on c.cust_id=o.cust_id;
+
+select c.cust_id,c.cust_name,o.orderid,o.track_id from customers c right outer join orders o on c.cust_id=o.cust_id;
+
+select c.cust_id,c.cust_name,o.orderid,o.track_id from customers c full outer join orders o on c.cust_id=o.cust_id; 
+
+--Indexes ---
+create index customer_index on table customers(cust_id) as 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler'
+    with deferred rebuild
+    in table customer_index_table
+    COMMENT 'Customer Index on custid';
+
+--- Hive Partitioning ---
+set hive.mapred.mode=strict;
+
+CREATE TABLE IF NOT EXISTS emp_part ( eid int, name String,dept String, yoj String)
+COMMENT 'Employee details'
+PARTITIONED BY (joining String)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE;	
+
+--Loading data in to partitioned table ---
+INSERT INTO TABLE emp_part
+PARTITION (joining ='2013')
+SELECT  eid,
+        name,
+        dept,
+        yoj
+FROM    employee
+WHERE   yoj='2013';
+
+--Hive Bucketing, TableSampling, SERDE ----
+
+--Loading data from Hbase to Hive tables ---
+
+--Hive UDF's (Simple UDF, GenericUDF) ---------
+http://geekological.com/?p=385 (Refer this link)
+
+ADD JAR /home/cloudera/ebooks/Hive/myudfs.jar;
+create function UPPER as 'com.example.hive.udf.Upper';
+select UPPER(name) FROM emp limit 10;
+
+UDF's creation :
+---------------
+We have two types of data types in hive(Primitive and complex data types)
+There are two ways to create your UDF, one is  simple and the other is complex. 
+The simple one allows you to create UDF with primitive Hadoop datatypes such as  
+Text, IntWritable, LongWritable, DoubleWritable, etc. extending UDF class.  
+For richer data types Map, List, Set you need to use the complex one extending GenericUDF class.
+
+example simple UDF :
+
+ADD JAR /home/cloudera/ebooks/Hive/HiveUDF.jar;
+CREATE TEMPORARY FUNCTION UPPERCASE as 'com.hive.udf.MyUpper';
+select UPPERCASE(name) FROM emp limit 10;
+
+CREATE TEMPORARY FUNCTION HELLO as 'com.hive.udf.HelloUDF';
+select HELLO(name) FROM emp limit 10;
+
+CREATE TEMPORARY FUNCTION stringEqual as 'com.hive.udf.GenericUDFEqual';
+SELECT stringEqual(name, "Lokesh") from emp ;
+
+
+-------------------------------------------
+To see the available functions in Hive.
+
+show functions;
+describe function concat;
+
+------------------------------------------------
+Insert into table employee Select * from emp where empid=6022950;
+hive> describe formatted emp;
+$ hadoop fs -copyFromLocal -f /home/cloudera/ebooks/Hive/employee.txt hdfs://localhost.localdomain:8020/user/hive/warehouse/emp
+
+----------------------------------------------------------------------------
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples.jar randomtextwriter /user/cloudera/random-text-data
+To generates 10 GB textual data in HDFS execute above command.
