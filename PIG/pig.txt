@@ -1,0 +1,122 @@
+Pig runs in two modes: 
+> pig -x local
+> pig
+
+
+A = LOAD '/home/cloudera/ebooks/Pig/data/sales.txt' USING PigStorage(',') AS (year:int,product:chararray,quantity:int);
+ describe A;
+ ILLUSTRATE A;
+ B = FILTER A BY quantity > 1000;
+ DUMP B;
+
+
+C = FILTER A BY quantity > 1000 AND year == 2001;
+D = FILTER A BY year != 2000;
+
+To get the Count of Product :
+-----------------------------
+B = FOREACH A GENERATE product; 
+C =GROUP B  BY product; 
+D = FOREACH C GENERATE group,COUNT(B);
+
+
+To write the data set into HDFS, use the STORE operator as shown below .
+
+STORE A INTO '/user/cloudera/sales'
+
+
+
+Defining schema without specifying any data types. 
+
+A = LOAD '/home/cloudera/ebooks/Pig/data/sales.txt' USING PigStorage(',') AS (year,product,quantity);
+
+grunt> describe A;
+A: {year: bytearray,product: bytearray,quantity: bytearray}
+
+grunt> STORE A into '/user/hadoop/products' USING PigStorage('|'); --Writes data with pipe as delimiter into hdfs product directory.
+
+
+The fields can be accessed in two ways: 
+
+Field Names: We can specify the field name to access the values from that particular value.
+Positional Parameters: The field positions start from 0 to n. $0 indicates first field, $1 indicates second field.
+
+grunt> A = LOAD '/home/cloudera/ebooks/Pig/data/sales.txt' USING PigStorage(',') AS (year:int,product:chararray,quantity:int);
+grunt> B = FOREACH A GENERATE product;
+grunt> C = FOREACH A GENERATE $1,$2;
+grunt> DUMP B;
+grunt> DUMP C;
+
+
+
+
+Word Count Example - Pig Script :
+---------------------------------
+
+lines = LOAD '/user/cloudera/Pig/sales.txt' AS (line:chararray);
+words = FOREACH lines GENERATE FLATTEN(TOKENIZE(line)) as word;
+grouped = GROUP words BY word;
+wordcount = FOREACH grouped GENERATE group, COUNT(words);
+DUMP wordcount;
+
+D = FOREACH C GENERATE group,COUNT(B);
+
+Word Count Example - Hive :
+---------------------------
+
+cloudera> hive -f word_count.hql
+
+CREATE TABLE docs (line STRING);
+LOAD DATA INPATH '/home/cloudera/ebooks/Pig/data/sales.txt' OVERWRITE INTO TABLE docs;
+CREATE TABLE word_counts AS
+SELECT word, count(1) AS count FROM
+(SELECT explode(split(line, ',')) AS word FROM docs) word
+GROUP BY word
+ORDER BY word;
+
+
+UDF in PIG :
+------------
+1.Single row function (UDF =User Defined Function) -- extends EvalFunc<String>
+2.Multi row function (UDAF=User Defined Aggregate Function) -- extends EvalFunc<Integer> implements Algebraic 
+e.g  COUNT is Algebraic function.
+3.Table generation function (UDTF =User Defined Table generating Function) -extends EvalFunc<Integer> implements Accumulator<Integer>
+e.g IntMax is Accumulator function.
+
+Add Jars this jar's in eclipse :
+From /usr/lib/pig directory
+pig.jar
+pig-0.11.0-cdh4.4.0.jar
+
+
+package myudfs;
+import java.io.IOException;
+import org.apache.pig.EvalFunc;
+import org.apache.pig.data.Tuple;
+import org.apache.pig.impl.util.WrappedIOException;
+
+public class UPPER
+  extends EvalFunc<String>
+{
+  public String exec(Tuple input)
+    throws IOException
+  {
+    if ((input == null) || (input.size() == 0)) {
+      return null;
+    }
+    try
+    {
+      String str = (String)input.get(0);
+      return str.toUpperCase();
+    }
+    catch (Exception e)
+    {
+      throw WrappedIOException.wrap("Caught exception processing input row ", e);
+    }
+  }
+}
+
+REGISTER /home/cloudera/ebooks/Pig/myudfs.jar;
+A = LOAD '/home/cloudera/ebooks/Pig/data/sales.txt' USING PigStorage(',') AS (year:int,product:chararray,quantity:int);
+B = FOREACH A GENERATE myudfs.UPPER(product);
+DUMP B;
