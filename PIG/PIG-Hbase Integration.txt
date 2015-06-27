@@ -1,0 +1,19 @@
+// In this exercise we will see how to load data in a file using Pig in to Hbase tables.
+
+// First create a table in hbase.
+create 'sales', 'info'
+
+// Now load the data from a text file as below.
+
+A = LOAD '/home/cloudera/ebooks/Pig/data/sales.txt' USING PigStorage(',') AS (year:int,product:chararray,quantity:int);
+
+// Store the data in to hbase table .
+
+STORE A INTO 'hbase://sales' USING
+org.apache.pig.backend.hadoop.hbase.HBaseStorage (
+'info:fname info:lname');
+
+//Verify whether the data has been stored in hbase table.
+
+scan 'sales
+
