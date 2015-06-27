@@ -1,0 +1,43 @@
+// In this exercise we will see how to load data from Hbase to Hive table
+
+// Log in to hbase and create a table habse_user
+
+> hbase shell
+
+>creating table.
+---------------
+create 'habse_user', ['FirstName','LastName','EmailId','City']
+describe 'habse_user'
+
+Inserting data.
+---------------
+put 'habse_user', 'Revanth', 'FirstName:first_name', 'Singam'
+put 'habse_user','Revanth', 'LastName:last_name', 'Reddy'
+put 'habse_user','Revanth','City:city', 'Bangalore'
+put 'habse_user','Revanth','EmailId:emailId', 're1t.sr@gmail.com'
+put 'habse_user', 'Lokesh', 'FirstName:first_name', 'Puli'
+put 'habse_user','Lokesh', 'LastName:last_name', 'PowerStar'
+put 'habse_user','Lokesh','City:city', 'Bangalore'
+put 'habse_user','Lokesh','EmailId:emailId', 'lokeshbusa@gmail.com'
+
+//Verify the rows are inserted into table habse_user
+> scan 'habse_user'
+
+//Log in to hive and create Hive external table
+
+create external table hive_user
+(key string, FirstName string, LastName string, City string, EmailId string)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES
+("hbase.columns.mapping" = ":key,FirstName:first_name,LastName:last_name,City:city,EmailId:emailId")
+TBLPROPERTIES ("hbase.table.name" = "habse_user");
+
+//Hbase table 'habse_user' is now mapped with Hive 'hive_user'
+
+//Verify hbasehive_table is created
+> show tables;
+
+// run below query from habse_user to fetch rows inserted in hive_user Table
+> select * from hive_user;
+
+
