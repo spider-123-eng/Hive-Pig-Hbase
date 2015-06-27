@@ -62,12 +62,34 @@ public class HbaseCRUD {
         }
 		
 	}
+	public static void updateData(){
+		
+		Configuration conf = HBaseConfiguration.create();
+		try{
+		HTable hTable = new HTable(conf, tableName);
+		Put put = new Put(Bytes.toBytes("Jagan Anna"));
+		
+		// Updating a cell value
+		put.add(Bytes.toBytes("FirstName"), Bytes.toBytes("first_name"), Bytes.toBytes("JaganMohan "));			
+        put.add(Bytes.toBytes("LastName"), Bytes.toBytes("last_name"), Bytes.toBytes("Reddy"));			
+        put.add(Bytes.toBytes("EmailId"), Bytes.toBytes("emailId"), Bytes.toBytes("Jagan@gmail.com"));			
+        put.add(Bytes.toBytes("City"), Bytes.toBytes("city"), Bytes.toBytes("Pulivendula-Simham"));
+		hTable.put(put);
+		hTable.close();
+		System.out.println("data Updated");
+		}
+		catch(Exception e) {
+            e.printStackTrace();
+            System.out.println("Error processing  caused by " + e.getMessage());
+        }
+		
+	}
 	
 	public static void deleteData(){
 		
 		Configuration conf = HBaseConfiguration.create();
 		try{
-		HTable hTable = new HTable(conf, "user");
+		HTable hTable = new HTable(conf, tableName);
 		
 		// TO delete only one column
 		
@@ -91,7 +113,7 @@ public class HbaseCRUD {
 		
 		Configuration conf = HBaseConfiguration.create();
 		try{
-		HTable hTable = new HTable(conf, "user");
+		HTable hTable = new HTable(conf, tableName);
 		Get get = new Get(Bytes.toBytes("Jagan Anna"));
 		Result result = hTable.get(get);
 		System.out.println("RowId: " + Bytes.toString(result.getRow()));
@@ -120,6 +142,7 @@ public class HbaseCRUD {
 	public static void main(String[] args)  {
 		HbaseCRUD.createTable();
 		HbaseCRUD.putData();
+		//HbaseCRUD.updateData();
 		//HbaseCRUD.deleteData();
 		HbaseCRUD.getData();
 		
