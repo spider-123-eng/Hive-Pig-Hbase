@@ -157,4 +157,4 @@ $ hadoop fs -copyFromLocal -f /home/cloudera/ebooks/Hive/employee.txt hdfs://loc
 
 ----------------------------------------------------------------------------
 hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples.jar randomtextwriter /user/cloudera/random-text-data
-To generates 10 GB textual data in HDFS execute above command.
+To generates 10 GB textual data in HDFS, execute above command.

@@ -1,0 +1,5 @@
+rowid,firstname,lastname,emailid,city
+Re1t,Singam,Reddy,re1t95@gmail.com,Kadapa
+Ravi,Kumar,Reddy,ravi9@gmail.com,Chennai
+Madhu,kumar,Reddy,madhu@gmail.com,Bangalore
+Revanth,Singam,Reddy,singam@gmail.com,Kerala
