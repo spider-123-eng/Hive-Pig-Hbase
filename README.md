@@ -1,5 +1,6 @@
 # In this blog you will find some basic concepts on Hive,Pig,Hbase and Sqoop.
 
+----------------------------------------------------------------------------------------------------------------------------
 #Hive:
 In this folder you will find the below concepts using Hive.
 
