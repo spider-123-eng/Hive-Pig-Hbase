@@ -14,7 +14,7 @@ In this folder you will find the below concepts using Hive.
  9.Creating Hive UDF's (Simple UDF, GenericUDF).  
  
  ----------------------------------------------------------------------------------------------------------------------------
- #Pig:
+ #Pig:    
  In this folder you will find the below concepts using Hive.   
  
  1.Running Pig in two modes(Local,HDFS).   
@@ -25,9 +25,16 @@ In this folder you will find the below concepts using Hive.
  6.UDF in PIG.    
  
  ----------------------------------------------------------------------------------------------------------------------------
- #Hbase:
+ #Hbase:   
+ In this folder you will find the below concepts using Hbase.    
+ 1.Creating tables in Hbase.   
+ 2.Inserting data,getting data,deleting data,adding column,deleting all/single column on Hbase tables.   
+ 3.Java Client API to perform all CRUD operations on Hbase.   
+ 4.Loading data in to Hbase using Pig.   
+ 5.Loading Bulk data in to HBase from Text,CSV file using Java Client API.   
+ 6.HBase Hive integration – Querying HBase via Hive.    
  
-  In this folder you will find the below concepts using Hbase. 
+ 
  
  
  
