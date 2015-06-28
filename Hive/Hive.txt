@@ -24,7 +24,7 @@ COMMENT 'Employee details'
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
-STORED AS TEXTFILE  LOCATION '/user/cloudera/hive/ExternalTables/' ;
+STORED AS TEXTFILE  LOCATION '/user/cloudera/hive/ExternalTables/' ;  
  
 Note : Difference between Hive managed tables vs External tables ?
 Managed Table :
