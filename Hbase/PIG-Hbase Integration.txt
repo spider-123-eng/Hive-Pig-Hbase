@@ -15,5 +15,5 @@ org.apache.pig.backend.hadoop.hbase.HBaseStorage (
 
 //Verify whether the data has been stored in hbase table.
 
-scan 'sales
+scan 'sales'
 
