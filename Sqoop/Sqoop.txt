@@ -1,3 +1,6 @@
+If Mysql is not installed please follow the below link.
+http://www.rackspace.com/knowledge_center/article/installing-mysql-server-on-centos
+
 Connect to mysql by following command.
 --------------------------------------
 $ mysql -u root -p
