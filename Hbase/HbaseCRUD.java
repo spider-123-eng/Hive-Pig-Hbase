@@ -1,15 +1,22 @@
 package com.hbase.data.upload;
 
+import java.io.IOException;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.MasterNotRunningException;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
 
@@ -138,14 +145,46 @@ public class HbaseCRUD {
         }
 		
 	}
-	
-	public static void main(String[] args)  {
+	 public static void getAllRecord (String tableName) {
+	        try{
+	        	Configuration conf = HBaseConfiguration.create();
+	             HTable table = new HTable(conf, tableName);
+	             Scan s = new Scan();
+	             ResultScanner ss = table.getScanner(s);
+	             for(Result r:ss){
+	                 for(KeyValue kv : r.raw()){
+	                    System.out.print(new String(kv.getRow()) + " ");
+	                    System.out.print(new String(kv.getFamily()) + ":");
+	                    System.out.print(new String(kv.getQualifier()) + " ");
+	                    System.out.print(kv.getTimestamp() + " ");
+	                    System.out.println(new String(kv.getValue()));
+	                 }
+	             }
+	        } catch (IOException e){
+	            e.printStackTrace();
+	        }
+	    }
+	 public static void deleteTable(String tableName) throws Exception {
+	        try {
+	        	Configuration conf = HBaseConfiguration.create();
+	            HBaseAdmin admin = new HBaseAdmin(conf);
+	            admin.disableTable(tableName);
+	            admin.deleteTable(tableName);
+	            System.out.println("delete table " + tableName + " ok.");
+	        } catch (MasterNotRunningException e) {
+	            e.printStackTrace();
+	        } catch (ZooKeeperConnectionException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	public static void main(String[] args) throws Exception  {
 		HbaseCRUD.createTable();
 		HbaseCRUD.putData();
-		//HbaseCRUD.updateData();
+		HbaseCRUD.updateData();
 		//HbaseCRUD.deleteData();
-		HbaseCRUD.getData();
-		
+		//HbaseCRUD.getData();
+		HbaseCRUD.getAllRecord(tableName);
+		//HbaseCRUD.deleteTable(tableName);
 		}
 
 }
