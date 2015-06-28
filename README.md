@@ -13,6 +13,7 @@ In this folder you will find the below concepts using Hive.
  8.Loading data from Hbase to Hive tables.    
  9.Creating Hive UDF's (Simple UDF, GenericUDF).  
  
+ ----------------------------------------------------------------------------------------------------------------------------
  #Pig:
  In this folder you will find the below concepts using Hive.   
  
@@ -22,6 +23,12 @@ In this folder you will find the below concepts using Hive.
  4.Word Count Example using Pig Script.    
  5.Word Count Example using Hive Script.    
  6.UDF in PIG.    
+ 
+ ----------------------------------------------------------------------------------------------------------------------------
+ #Hbase:
+ 
+  In this folder you will find the below concepts using Hbase. 
+ 
  
  
  
