@@ -1,0 +1,98 @@
+Connect to mysql by following command.
+--------------------------------------
+$ mysql -u root -p
+Enter password:password
+mysql> create database sqooptest;
+
+Check the sqoop version.
+------------------------
+$ sqoop version
+
+Test the mysql connection with sqoop.
+-------------------------------------
+sqoop list-databases --connect jdbc:mysql://localhost:3306/sqooptest --username root --password password
+
+Mysql to HDFS.
+--------------
+mysql> create table products (
+product_id INT NOT NULL PRIMARY KEY,
+prod_name VARCHAR(100),
+prod_unit INT NOT NULL
+);
+
+We will now import products table into HDFS.
+----------------------------------------------
+sqoop import --connect jdbc:mysql://localhost:3306/sqooptest --username root --password password --table products 
+
+sqoop import --options-file param_file.txt --table products -m 1 --warehouse-dir /user/hive/warehouse/
+
+sqoop import --options-file param_file.txt --table products -m 1 --target-dir /user/cloudera/products
+
+Note :difference between target-dir & warehouse-dir is, that target-dir should not be present when you use this,
+whereas warehouse-dir allows existence of the directory.
+
+
+HDFS to Mysql.
+--------------
+First create following table in mysql.
+
+CREATE TABLE restdata (
+s_camis TEXT,
+s_dba TEXT,
+s_boro TEXT,
+s_building TEXT,
+s_street TEXT,
+s_zipcode TEXT,
+s_phone TEXT,
+s_cuscode TEXT,
+s_insp_date TEXT,
+s_action TEXT,
+s_viocode TEXT,
+s_score TEXT,
+s_grade TEXT,
+s_g_date TEXT,
+s_r_date TEXT
+);
+
+We will now export data from HDFS into mysql table.
+---------------------------------------------------
+hadoop fs -put /home/cloudera/restdata.csv /user/cloudera/
+sqoop export --options-file param_file.txt --table restdata --export-dir '/user/cloudera/restdata.csv'
+
+
+Importing Data into Hive with Sqoop from MySql.
+-----------------------------------------------
+hive> create database sqooptest;
+
+>$ sqoop import --connect jdbc:mysql://localhost:3306/sqooptest \
+   --username root -P \
+   --table products \
+   --hive-import \
+   --hive-table sqooptest.products -m 1
+   
+   
+Import data from RDBMS to HBase using SQOOP .
+--------------------------------------------   
+CREATE TABLE IF NOT EXISTS 'employees' (
+'id' float NOT NULL AUTO_INCREMENT,
+'name' varchar(255) NOT NULL,
+'department' varchar(255) NOT NULL,
+'salary' float NOT NULL,
+'created_at' datetime NOT NULL,
+PRIMARY KEY ('id')
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+   
+INSERT INTO employees VALUES(1, 'Vineet Sethi', 'HR', 25000, '2013-02-25 00:00:00'),
+(2, 'Monika Sethi', 'Finance', 15000, '2014-02-21 00:00:00'),
+(3, 'Aleen Sethi', 'Admin', 25700.5, '2013-04-02 00:00:00'),
+(4, 'Rahul Sethi', 'Finance', 20000, '2013-05-07 00:00:00');
+
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/sqooptest \
+--username root -P \
+--table employees \
+--hbase-table employeestohbase \
+--column-family cf \
+--hbase-create-table
+
