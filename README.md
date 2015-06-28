@@ -16,12 +16,12 @@ In this folder you will find the below concepts using Hive.
  #Pig:
  In this folder you will find the below concepts using Hive.   
  
- 1.Running Pig in two modes(Local,HDFS).
- 2.Loading,Storing data.
- 3.Ways to access the fields in two ways.
- 4.Word Count Example using Pig Script.
- 5.Word Count Example using Hive Script.
- 6.UDF in PIG.
+ 1.Running Pig in two modes(Local,HDFS).   
+ 2.Loading,Storing data.   
+ 3.Ways to access the fields in two ways.    
+ 4.Word Count Example using Pig Script.    
+ 5.Word Count Example using Hive Script.    
+ 6.UDF in PIG.    
  
  
  
