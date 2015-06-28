@@ -34,6 +34,14 @@ In this folder you will find the below concepts using Hive.
  5.Loading Bulk data in to HBase from Text,CSV file using Java Client API.   
  6.HBase Hive integration – Querying HBase via Hive.    
  
+ ----------------------------------------------------------------------------------------------------------------------------
+ #Sqoop :
+ In this folder you will find the below concepts using Sqoop.        
+ 1.Importing data from RDBMS to HDFS.     
+ 2.Exporting data from HDFS to RDBMS .      
+ 3.Importing Data into Hive with Sqoop from MySql.    
+ 4.Import data from RDBMS to HBase using Sqoop.     
+ 
  
  
  
