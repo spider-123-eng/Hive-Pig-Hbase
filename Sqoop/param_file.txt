@@ -1,0 +1,7 @@
+# options file for passing the login and db info to sqoop
+--connect
+jdbc:mysql://localhost:3306/sqooptest
+--username
+root
+--password
+password
