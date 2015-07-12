@@ -125,6 +125,11 @@ select UPPER(name) FROM emp limit 10;
 
 UDF's creation :
 ---------------
+UDF - UDF's in hive are used for single row transformations(A single value comes in and a single value comes out).
+UDAF - It is an aggregate function which takes many rows as input and produces a single row. 
+Used in conjunction with a grouping of some sort. e.g select empname,MAX(sal) from emp group by empname;
+UDTF- user defined Table functions are used to transform single row in to multiple rows.
+
 We have two types of data types in hive(Primitive and complex data types)
 There are two ways to create your UDF, one is  simple and the other is complex. 
 The simple one allows you to create UDF with primitive Hadoop datatypes such as  
