@@ -1,6 +1,7 @@
 Hive partitioning for external tables:
 
 Load data into HDFS :
+--------------------
 Data resides in /user/cloudera/HiveTrail/users.txt ( The file users.txt is a sample employee data.)
 
 create external table User (EmployeeID Int,FirstName String,Designation  String,Salary Int,Department String) 
@@ -15,8 +16,9 @@ create  table User_Parti (EmployeeID Int,FirstName String,Designation  String,Sa
 
 
 Insert data into Partitioned table, by using select clause.There are 2 ways to insert data into partition table.
-
-1. Static Partition - Using individual insert
+----------------------------------------------------------------------------------------------------------------
+1. Static Partition - Using individual insert.
+----------------------------------------------
 
 INSERT INTO TABLE User_Parti PARTITION(department='A') 
 SELECT EmployeeID, FirstName,Designation,Salary FROM Unm_Dup_Parti WHERE department='A'; 
@@ -27,9 +29,11 @@ SELECT EmployeeID, FirstName,Designation,Salary FROM Unm_Dup_Parti WHERE departm
 INSERT INTO TABLE User_Parti PARTITION (department='C') 
 SELECT EmployeeID, FirstName,Designation,Salary FROM Unm_Dup_Parti WHERE department='C';
 
- If we go for the above approach , if we have 50 partitions we need to do the insert statement 50 times. That is a tedious task and it is known as Static Partition.
+If we go for the above approach , if we have 50 partitions we need to do the insert statement 50 times. 
+That is a tedious task and it is known as Static Partition.
  
-2. Dynamic Partition – Single insert to partition table
+2. Dynamic Partition – Single insert to partition table.
+--------------------------------------------------------
  In order to achieve the same we need to set the following things .
  
  a) set hive.exec.dynamic.partition=true;
