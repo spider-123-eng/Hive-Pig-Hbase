@@ -92,6 +92,11 @@ create index customer_index on table customers(cust_id) as 'org.apache.hadoop.hi
     COMMENT 'Customer Index on custid';
 
 --- Hive Partitioning ---
+There are 2 concepts in partitioning i,e Static and Dynamic
+In static the files are partitioned manually like years (2000 - 2014) we need to partition 2000.csv, 2001.csv etc .
+where as in Dynamic 2 SET commands instruct hive to change our query to dynamically load partitions 
+(SET hive.exec.dynamic.partition = true; SET hive.exec.dynamic.partition.mode = nonstrict;)
+
 set hive.mapred.mode=strict;
 
 CREATE TABLE IF NOT EXISTS emp_part ( eid int, name String,dept String, yoj String)

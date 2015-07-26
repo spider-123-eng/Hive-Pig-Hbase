@@ -1,0 +1,72 @@
+Hive partitioning for external tables:
+
+Load data into HDFS :
+Data resides in /user/cloudera/HiveTrail/users.txt ( The file users.txt is a sample employee data.)
+
+create external table User (EmployeeID Int,FirstName String,Designation  String,Salary Int,Department String) 
+row format delimited fields terminated by "," location '/user/cloudera/HiveTrail';
+
+LOAD DATA LOCAL INPATH '/home/cloudera/ebooks/Hive/emp_par' INTO TABLE User;
+
+Create Partitioned hive table ( We are going to partition this dataset based on Departments).
+
+create  table User_Parti (EmployeeID Int,FirstName String,Designation  String,Salary Int) PARTITIONED BY (Department String)
+ row format delimited fields terminated by ",";
+
+
+Insert data into Partitioned table, by using select clause.There are 2 ways to insert data into partition table.
+
+1. Static Partition - Using individual insert
+
+INSERT INTO TABLE User_Parti PARTITION(department='A') 
+SELECT EmployeeID, FirstName,Designation,Salary FROM Unm_Dup_Parti WHERE department='A'; 
+
+INSERT INTO TABLE User_Parti PARTITION (department='B') 
+SELECT EmployeeID, FirstName,Designation,Salary FROM Unm_Dup_Parti WHERE department='B'; 
+
+INSERT INTO TABLE User_Parti PARTITION (department='C') 
+SELECT EmployeeID, FirstName,Designation,Salary FROM Unm_Dup_Parti WHERE department='C';
+
+ If we go for the above approach , if we have 50 partitions we need to do the insert statement 50 times. That is a tedious task and it is known as Static Partition.
+ 
+2. Dynamic Partition – Single insert to partition table
+ In order to achieve the same we need to set the following things .
+ 
+ a) set hive.exec.dynamic.partition=true;
+ b) set hive.exec.dynamic.partition.mode=nonstrict;
+ 
+ INSERT OVERWRITE TABLE User_Parti PARTITION(department) SELECT EmployeeID, FirstName,Designation,Salary,department FROM User;
+ 
+ 
+If the table is large enough the above query wont work seems like due to the larger number of files created on initial map task. 
+
+So in that cases group the records in your hive query on the map process and process them on the reduce side. 
+You can implement the same in your hive query itself with the usage of DISTRIBUTE BY. Below is the query .
+
+FROM User_Parti INSERT OVERWRITE TABLE Unm_Parti PARTITION(department) SELECT EmployeeID, FirstName,Designation,Salary,department DISTRIBUTE BY department;
+
+Hive Bucketed Tables :
+----------------------
+Lets see how to create buckets in Hive table
+
+The main difference between Hive partitioning and Bucketing is ,when we do partitioning,
+ we create a partition for each unique value of the column. But there may be situation where we need to 
+ create lot of tiny partitions. But if you use bucketing, you can limit it to a number which you choose 
+ and decompose your data into those buckets. In hive a partition is a directory but a bucket is a file.
+
+In hive, bucketing does not work by default. You will have to set following variable to enable bucketing. 
+set hive.enforce.bucketing=true;
+
+Create bucketed table :
+create table User_bucket (EmployeeID Int,FirstName String,Designation String,Salary Int,Department String) clustered by (department) into 3 buckets row format delimited fields terminated by ",";
+
+Load data in to bucketed table : 
+from User insert into table User_bucket select employeeid,firstname,designation,salary,department;
+
+Check how many data file have created in Hive metastore.
+
+hadoop fs -ls /user/hive/warehouse/user_bucket
+
+Lets check the table content in Hive warehouse .
+
+hadoop fs -cat  /user/hive/warehouse/user_bucket/000000_0 
