@@ -59,7 +59,6 @@ grouped = GROUP words BY word;
 wordcount = FOREACH grouped GENERATE group, COUNT(words);
 DUMP wordcount;
 
-D = FOREACH C GENERATE group,COUNT(B);
 
 Word Count Example - Hive :
 ---------------------------
