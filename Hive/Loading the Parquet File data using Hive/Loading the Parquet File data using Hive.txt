@@ -1,0 +1,56 @@
+Loading the Parquet File data using Hive :
+------------------------------------------
+
+Step 1 : We need to download parquet related jars and we should place them in /usr/lib/hive/lib folder .
+
+
+$ cd /usr/lib/hive/lib
+$ ln -s /usr/lib/impala/lib/parquet-hive-1.0.jar
+$ for f in parquet-avro parquet-cascading parquet-column parquet-common parquet-encoding parquet-generator parquet-hadoop parquet-hive parquet-pig parquet-scrooge parquet-test-hadoop2 parquet-thrift
+ do
+ curl -O https://oss.sonatype.org/service/local/repositories/releases/content/com/twitter/${f}/1.2.5/${f}-1.2.5.jar
+ done
+ curl -O https://oss.sonatype.org/service/local/repositories/releases/content/com/twitter/parquet-format/1.0.0/parquet-format-1.0.0.jar
+
+
+Step 2 : Create table in Hive :
+
+hive> create table parquet_table_name (age INT, name STRING)
+ROW FORMAT SERDE 'parquet.hive.serde.ParquetHiveSerDe'
+STORED AS 
+INPUTFORMAT "parquet.hive.DeprecatedParquetInputFormat"
+OUTPUTFORMAT "parquet.hive.DeprecatedParquetOutputFormat";
+
+LOAD DATA LOCAL INPATH '/home/cloudera/ebooks/Hive/' INTO TABLE parquet_table_name ;
+
+Step 3: We need to add this jars before we fetch data from table .
+hive>
+
+add jar /usr/lib/hive/lib/parquet-avro-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-cascading-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-column-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-common-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-encoding-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-generator-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-hadoop-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-hive-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-pig-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-scrooge-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-test-hadoop2-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-thrift-1.2.5.jar;
+add jar /usr/lib/hive/lib/parquet-format-1.0.0.jar;
+
+Step 4: Do some querying 
+
+SELECT name FROM parquet_table_name WHERE age >= 13 AND age <= 19;
+SELECT count(*) FROM parquet_table_name WHERE age >= 13 AND age <= 19;
+
+
+Some Google Refrences :
+
+https://phdata.io/examples-using-textfile-and-parquet-with-hive-and-impala/
+
+http://cmenguy.github.io/blog/2013/10/30/using-hive-with-parquet-format-in-cdh-4-dot-3/
+
+http://www.cloudera.com/content/cloudera/en/documentation/cdh4/latest/CDH4-Installation-Guide/cdh4ig_parquet.html  
+

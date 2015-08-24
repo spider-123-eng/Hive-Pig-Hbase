@@ -49,6 +49,10 @@ You can implement the same in your hive query itself with the usage of DISTRIBUT
 
 FROM User_Parti INSERT OVERWRITE TABLE Unm_Parti PARTITION(department) SELECT EmployeeID, FirstName,Designation,Salary,department DISTRIBUTE BY department;
 
+How To Drop A Particular Partition in HIVE :
+--------------------------------------------
+ALTER TABLE User DROP IF EXISTS PARTITION(Department='A');
+
 Hive Bucketed Tables :
 ----------------------
 Lets see how to create buckets in Hive table
