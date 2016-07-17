@@ -1,17 +1,9 @@
-Revanth Reddy,6022950,2
-Shaym Sunder,12345,1
-Kumar,111111,3
-Lokesh,00011,5
-Madhu,321123,6
-Pawav,565656,7
-simha,602233,8
-Phani,111222,9
-Singam Reddy,602295,2
-Sunder,12346,1
-Ravi Kumar,131111,3
-Mani,30011,5
-Madhusudan,328123,6
-Praveen,5465656,7
-Swathi,602234,8
-Anushka,131222,9
-Madhava,1111,11
+1234,revanth reddy,ECE,2015
+1235,singam reddy,EEE,2015
+1236,ravikanth reddy,CSE,2015
+1231,kiran,ECE,2015
+1232,singam ,EEE,2015
+1233,Nanda,CSE,2015
+1237,Kishore reddy,ECE,2015
+1238,Shyam reddy,MEC,2015
+1239,ravi,IT,2015
