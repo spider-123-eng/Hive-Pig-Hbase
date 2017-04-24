@@ -41,7 +41,95 @@ That is a tedious task and it is known as Static Partition.
  
  INSERT OVERWRITE TABLE User_Parti PARTITION(department) SELECT EmployeeID, FirstName,Designation,Salary,department FROM User;
  
- 
+Example 2:
+----------
+create schema airline_db;
+use airline_db;
+
+create table airline_db.airline
+(Year INT ,
+Month INT ,
+DayofMonth INT ,
+DayOfWeek INT ,
+DepTime INT ,
+CRSDepTime INT ,
+ArrTime INT ,
+CRSArrTime INT ,
+UniqueCarrier STRING ,
+FlightNum INT ,
+TailNum STRING ,
+ActualElapsedTime INT ,
+CRSElapsedTime INT ,
+AirTime STRING ,
+ArrDelay INT ,
+DepDelay INT ,
+Origin STRING ,
+Dest STRING ,
+Distance INT ,
+TaxiIn STRING ,
+TaxiOut STRING ,
+Cancelled INT ,
+CancellationCode STRING ,
+Diverted INT ,
+CarrierDelay STRING ,
+WeatherDelay STRING ,
+NASDelay STRING ,
+SecurityDelay STRING ,
+LateAircraftDelay STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE;
+
+
+sudo hadoop fs -put airline.csv /user/data/
+
+LOAD DATA INPATH '/user/data/airline.csv' OVERWRITE INTO TABLE airline_db.airline;
+
+
+create table airline_db.ext_airline
+(DayofMonth INT ,
+DayOfWeek INT ,
+DepTime INT ,
+CRSDepTime INT ,
+ArrTime INT ,
+CRSArrTime INT ,
+UniqueCarrier STRING ,
+FlightNum INT ,
+TailNum STRING ,
+ActualElapsedTime INT ,
+CRSElapsedTime INT ,
+AirTime STRING ,
+ArrDelay INT ,
+DepDelay INT ,
+Origin STRING ,
+Dest STRING ,
+Distance INT ,
+TaxiIn STRING ,
+TaxiOut STRING ,
+Cancelled INT ,
+CancellationCode STRING ,
+Diverted INT ,
+CarrierDelay STRING ,
+WeatherDelay STRING ,
+NASDelay STRING ,
+SecurityDelay STRING ,
+LateAircraftDelay STRING)
+PARTITIONED BY (Year INT, Month INT )
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE;
+
+
+SET hive.exec.dynamic.partition = true;
+SET hive.exec.dynamic.partition.mode = nonstrict;
+set mapred.reduce.tasks=99;
+set hive.exec.reducers.max=99;
+
+INSERT OVERWRITE TABLE airline_db.ext_airline PARTITION(Year, Month) SELECT DayofMonth, DayOfWeek, DepTime, CRSDepTime, ArrTime, CRSArrTime, UniqueCarrier, FlightNum, TailNum, ActualElapsedTime, CRSElapsedTime, AirTime, ArrDelay, DepDelay, Origin, Dest, Distance, TaxiIn, TaxiOut, Cancelled, CancellationCode, Diverted, CarrierDelay, WeatherDelay, NASDelay, SecurityDelay, LateAircraftDelay, Year, Month FROM airline_db.airline;
+
+
+select count(*) from  airline_db.ext_airline where Year = 2009;
+select count(*) from  airline_db.ext_airline where (Year >= 2009) and (Year <= 2011);
+
+-------------------------------------------------------------------------------------------------------------------
 If the table is large enough the above query wont work seems like due to the larger number of files created on initial map task. 
 
 So in that cases group the records in your hive query on the map process and process them on the reduce side. 
