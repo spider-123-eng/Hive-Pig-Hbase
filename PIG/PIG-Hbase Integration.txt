@@ -5,15 +5,22 @@ create 'sales', 'info'
 
 // Now load the data from a text file as below.
 
-A = LOAD '/home/cloudera/ebooks/Pig/data/sales.txt' USING PigStorage(',') AS (year:int,product:chararray,quantity:int);
+grunt > A = LOAD '/home/cloudera/ebooks/Pig/data/sales.txt' USING PigStorage(',') AS (year:int,product:chararray,quantity:int);
 
-// Store the data in to hbase table .
-
-STORE A INTO 'hbase://sales' USING
+// Store the data in to hbase table
+grunt > STORE A INTO 'hbase://sales' USING
 org.apache.pig.backend.hadoop.hbase.HBaseStorage (
 'info:fname info:lname');
 
 //Verify whether the data has been stored in hbase table.
+hbase > scan 'sales'
 
-scan 'sales
+// Now load the data from HBase as below.
+
+grunt > B = LOAD 'hbase://sales' USING
+org.apache.pig.backend.hadoop.hbase.HBaseStorage (
+'info:fname info:lname') AS (fname:chararray, lname:chararray);
+
+//Verify  data fetched from HBase toPig.
+grunt > DUMP B;
 
